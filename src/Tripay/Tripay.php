@@ -77,14 +77,16 @@ class Tripay implements Transactions
 
   public function createTransaction(): array
   {
-    // dd(config("tripay.tripay_merchant_code") .
-    //   $this->payload["orderId"] .
-    //   $this->payload["amount"]);
     $this->payload["signature"] = hash_hmac(
       'sha256',
       config("tripay.tripay_merchant_code") . $this->payload["orderId"] . $this->payload["amount"],
       config("tripay.tripay_private_key")
     );
     return $this->transaction->create($this->payload);
+  }
+
+  public function detailTransaction(string $orderRef): array
+  {
+    return $this->transaction->detail($orderRef);
   }
 }

@@ -14,7 +14,8 @@ interface Transactions
   /**
    * Get tripay transaction detail
    * 
+   * @param  string $orderRef Reference order from tripay
    * @return mixed
    */
-  public function detail(): array;
+  public function detail(string $orderRef): array;
 }

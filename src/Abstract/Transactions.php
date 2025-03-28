@@ -33,6 +33,15 @@ interface Transactions
 
   /**
    * Generate payment invoice
+   * @return mixed
    */
   public function createTransaction(): array;
+
+  /**
+   * Get transaction detail
+   * 
+   * @param string $orderRef Transaction order ID / reference id
+   * @return mixed
+   */
+  public function detailTransaction(string $orderRef): array;
 }

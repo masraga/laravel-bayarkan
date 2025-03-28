@@ -46,8 +46,14 @@ class CloseTransaction implements Transactions
     return $response->json();
   }
 
-  public function detail(): array
+  public function detail(string $orderRef): array
   {
-    return [];
+    $response = Http::withHeaders([
+      "Authorization" => "Bearer " . config("tripay.tripay_api_key")
+    ])->get(
+      $this->baseUrl . "/transaction/detail",
+      ["reference" => $orderRef]
+    );
+    return $response->json();
   }
 }
