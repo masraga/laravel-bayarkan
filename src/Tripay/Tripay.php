@@ -3,7 +3,7 @@
 namespace Koderpedia\LaravelBayarkan\Tripay;
 
 use Koderpedia\LaravelBayarkan\Abstract\Transactions;
-use Koderpedia\LaravelBayarkan\Abstract\Tripay\CloseTransaction;
+use Koderpedia\LaravelBayarkan\Tripay\CloseTransaction;
 use Koderpedia\LaravelBayarkan\Abstract\Tripay\Transactions as TripayTransactions;
 
 class Tripay implements Transactions
@@ -19,16 +19,32 @@ class Tripay implements Transactions
    */
   private TripayTransactions $transaction;
 
-  public function __construct(TripayTransactions $transaction)
+  /**
+   * define tripay base url
+   */
+  private string $baseUrl;
+
+  public function __construct(TripayTransactions|null $transaction)
   {
-    $this->transaction = ($transaction) ? $transaction : new CloseTransaction();
+    $this->setDefaultVariable();
+    $this->transaction = ($transaction) ? $transaction : new CloseTransaction($this->baseUrl);
+  }
+
+  /**
+   * Setup default payload for generate transaction
+   */
+  private function setDefaultVariable()
+  {
+    $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api-sandbox";
     $this->payload = array(
       "orderId" => "",
       "customerDetail" => array(),
       "items" => array(),
       "paymentType" => "",
       "redirectUrl" => "",
-      "notifUrl" => ""
+      "notifUrl" => "",
+      "signature" => "",
+      "amount" => 0
     );
   }
 
@@ -46,7 +62,10 @@ class Tripay implements Transactions
 
   public function setItems(array $items)
   {
-    $this->payload["items"] =  $items;
+    $this->payload["items"] = $items;
+    foreach ($items as $item) {
+      $this->payload["amount"] += ($item["quantity"] * $item["price"]);
+    }
     return $this;
   }
 
@@ -56,15 +75,16 @@ class Tripay implements Transactions
     return $this;
   }
 
-  /**
-   * Generate tripay payment signature
-   * 
-   * @return void
-   */
-  private function generateSignature() {}
-
   public function createTransaction(): array
   {
+    // dd(config("tripay.tripay_merchant_code") .
+    //   $this->payload["orderId"] .
+    //   $this->payload["amount"]);
+    $this->payload["signature"] = hash_hmac(
+      'sha256',
+      config("tripay.tripay_merchant_code") . $this->payload["orderId"] . $this->payload["amount"],
+      config("tripay.tripay_private_key")
+    );
     return $this->transaction->create($this->payload);
   }
 }

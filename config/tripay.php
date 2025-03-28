@@ -34,4 +34,21 @@ return [
   | Tripay merchant configuration
   */
   'tripay_merchant_code' => env('TRIPAY_MERCHANT_CODE', ""),
+  /*
+  |--------------------------------------------------------------------------
+  | TRIPAY RETURN URL
+  |--------------------------------------------------------------------------
+  |
+  | Redirect URL after creating invoice
+  */
+  'tripay_return_url' => env('TRIPAY_RETURN_URL', "http://localhost:8000"),
+  /*
+  |--------------------------------------------------------------------------
+  | TRIPAY NOTIFICATION URL
+  |--------------------------------------------------------------------------
+  |
+  | Notification URL if transaction status is change from tripay.
+  | Note: endpoint must be a post method
+  */
+  'tripay_notification_url' => env('TRIPAY_NOTIFICATION_URL', "http://localhost:8000/api/callback/tripay"),
 ];
