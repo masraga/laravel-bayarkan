@@ -34,7 +34,7 @@ class CloseTransaction implements Transactions
       "order_items" => $payload["items"],
       "returnUrl" => $payload["returnUrl"] ?? config("tripay.tripay_return_url"),
       "callbackUrl" => $payload["notifUrl"] ?? config("tripay.tripay_notification_url"),
-      "expired_time" => (time() + (24 * 60 * 60)), // 24 jam
+      "expired_time" => $payload["expiredTime"],
       "signature" => $payload["signature"]
     ];
     $response = Http::withHeaders([

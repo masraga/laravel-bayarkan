@@ -10,6 +10,16 @@ class Tripay implements Transactions
 {
 
   /**
+   * Close payment method for tripay
+   */
+  const CLOSE_PAYMENT = "close";
+
+  /**
+   * Open payment method for tripay
+   */
+  const OPEN_PAYMENT = "open";
+
+  /**
    * Transaction payload
    */
   private array $payload;
@@ -24,10 +34,10 @@ class Tripay implements Transactions
    */
   private string $baseUrl;
 
-  public function __construct(TripayTransactions|null $transaction)
+  public function __construct(string $useMethod = self::CLOSE_PAYMENT)
   {
     $this->setDefaultVariable();
-    $this->transaction = ($transaction) ? $transaction : new CloseTransaction($this->baseUrl);
+    $this->transaction = ($useMethod == self::CLOSE_PAYMENT) ? new CloseTransaction($this->baseUrl) : "";
   }
 
   /**
@@ -44,7 +54,8 @@ class Tripay implements Transactions
       "redirectUrl" => "",
       "notifUrl" => "",
       "signature" => "",
-      "amount" => 0
+      "amount" => 0,
+      "expiredTime" => 0,
     );
   }
 
@@ -72,6 +83,12 @@ class Tripay implements Transactions
   public function setCustomerDetail(array $customer)
   {
     $this->payload["customerDetail"] = $customer;
+    return $this;
+  }
+
+  public function setExpiredTime(string|int $time)
+  {
+    $this->payload["expiredTime"] = $time;
     return $this;
   }
 

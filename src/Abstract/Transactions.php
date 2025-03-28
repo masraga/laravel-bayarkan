@@ -32,6 +32,13 @@ interface Transactions
   public function setCustomerDetail(array $customer);
 
   /**
+   * Define expired time for invoice
+   * 
+   * @param string|int $time Expired time
+   */
+  public function setExpiredTime(string|int $time);
+
+  /**
    * Generate payment invoice
    * @return mixed
    */
