@@ -17,6 +17,6 @@ class LaravelBayarkanServiceProvider extends ServiceProvider
 
   public function register()
   {
-    $this->mergeConfigFrom(__DIR__ . "../config/tripay.pgp", 'tripay');
+    $this->mergeConfigFrom(__DIR__ . "/../config/tripay.pgp", 'tripay');
   }
 }
