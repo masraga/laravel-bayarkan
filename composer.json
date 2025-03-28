@@ -1,0 +1,20 @@
+{
+    "name": "koderpedia/laravel-bayarkan",
+    "description": "Payment gateway aggregator with laravel",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Koderpedia\\LaravelBayarkan\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "masraga",
+            "email": "real.ragamulia@gmail.com"
+        }
+    ],
+    "require": {
+        "laravel/framework": ">=8"
+    }
+}
