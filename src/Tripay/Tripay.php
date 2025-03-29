@@ -20,6 +20,11 @@ class Tripay implements Transactions
   const OPEN_PAYMENT = "open";
 
   /**
+   * Tripay payment flow open or close
+   */
+  private $useMethod;
+
+  /**
    * Transaction payload
    */
   private array $payload;
@@ -36,8 +41,9 @@ class Tripay implements Transactions
 
   public function __construct(string $useMethod = self::CLOSE_PAYMENT)
   {
+    $this->useMethod = $useMethod;
     $this->setDefaultVariable();
-    $this->transaction = ($useMethod == self::CLOSE_PAYMENT) ? new CloseTransaction($this->baseUrl) : "";
+    $this->transaction = ($useMethod == self::CLOSE_PAYMENT) ? new CloseTransaction($this->baseUrl) : new OpenTransaction(($this->baseUrl));
   }
 
   /**
@@ -45,7 +51,11 @@ class Tripay implements Transactions
    */
   private function setDefaultVariable()
   {
-    $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api-sandbox";
+    if ($this->useMethod == self::CLOSE_PAYMENT) {
+      $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api-sandbox";
+    } else {
+      $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api";
+    }
     $this->payload = array(
       "orderId" => "",
       "customerDetail" => array(),
