@@ -97,7 +97,7 @@ class Tripay implements Transactions
     return $this;
   }
 
-  public function setExpiredTime(string|int $time)
+  public function setExpiredTime(string|int|array $time)
   {
     $this->payload["expiredTime"] = $time;
     return $this;

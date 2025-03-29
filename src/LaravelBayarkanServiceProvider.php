@@ -10,13 +10,15 @@ class LaravelBayarkanServiceProvider extends ServiceProvider
   {
     if ($this->app->runningInConsole()) {
       $this->publishes([
-        __DIR__ . "/../config/tripay.php" => config_path("tripay.php")
-      ], "config");
+        __DIR__ . "/../config/tripay.php" => config_path("tripay.php"),
+        __DIR__ . "/../config/midtrans.php" => config_path("midtrans.php"),
+      ], "config");;
     }
   }
 
   public function register()
   {
     $this->mergeConfigFrom(__DIR__ . "/../config/tripay.php", 'tripay');
+    $this->mergeConfigFrom(__DIR__ . "/../config/midtrans.php", 'midtrans');
   }
 }
