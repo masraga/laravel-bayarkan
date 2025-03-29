@@ -16,7 +16,8 @@
     ],
     "require": {
         "laravel/framework": ">=8",
-        "illuminate/support": ">=8"
+        "illuminate/support": ">=8",
+        "php": "^8"
     },
     "extra": {
         "laravel":{
@@ -24,5 +25,7 @@
                 "Koderpedia\\LaravelBayarkan\\LaravelBayarkanServiceProvider"
             ]
         }
-    }
+    },
+    "version": "0.0.1",
+    "minimum-stability": "stable"
 }
