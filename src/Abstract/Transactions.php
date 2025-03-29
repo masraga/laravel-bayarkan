@@ -51,4 +51,11 @@ interface Transactions
    * @return mixed
    */
   public function detailTransaction(string $orderRef): array;
+
+  /**
+   * Get payment channel of payment gateway
+   * 
+   * @return mixed
+   */
+  public function getPaymentChannel(): array;
 }

@@ -2,6 +2,7 @@
 
 namespace Koderpedia\LaravelBayarkan\Tripay;
 
+use Illuminate\Support\Facades\Http;
 use Koderpedia\LaravelBayarkan\Abstract\Transactions;
 use Koderpedia\LaravelBayarkan\Tripay\CloseTransaction;
 use Koderpedia\LaravelBayarkan\Abstract\Tripay\Transactions as TripayTransactions;
@@ -115,5 +116,14 @@ class Tripay implements Transactions
   public function detailTransaction(string $orderRef): array
   {
     return $this->transaction->detail($orderRef);
+  }
+
+  public function getPaymentChannel(): array
+  {
+    $endpoint = $this->baseUrl . "/merchant/payment-channel";
+    $response = Http::withHeaders([
+      "Authorization" => "Bearer " . config("tripay.tripay_api_key")
+    ])->get($endpoint);
+    return $response->json();
   }
 }
