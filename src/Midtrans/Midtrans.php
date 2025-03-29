@@ -33,7 +33,7 @@ class Midtrans implements Transactions
       "transactionDetail" => [],
       "creditCard" => [], // for credit card payment
       "items" => [],
-      "customerDetails" => [],
+      "customerDetail" => [],
       "customerExpiry" => [],
       "orderId" => "",
     ];
@@ -90,7 +90,11 @@ class Midtrans implements Transactions
   /**
    * Define customer detail for payment
    */
-  public function setCustomerDetail(array $customer) {}
+  public function setCustomerDetail(array $customer)
+  {
+    $this->payload["customerDetail"] = $customer;
+    return $this;
+  }
 
   /**
    * Define expired time for invoice

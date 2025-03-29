@@ -93,7 +93,15 @@ class BankTransfer implements PaymentMethod
     }
     unset($payload["items"]);
     unset($payload["orderId"]);
-
+    /**
+     * setup customer detail
+     */
+    $payload["customer_details"]["first_name"] = $payload["customerDetail"]["firstName"];
+    $payload["customer_details"]["last_name"] = $payload["customerDetail"]["lastName"];
+    $payload["customer_details"]["email"] = $payload["customerDetail"]["email"];
+    $payload["customer_details"]["phone"] = $payload["customerDetail"]["phone"];
+    $payload["customer_details"]["billing_address"]["address"] = $payload["customerDetail"]["address"];
+    unset($payload["customerDetail"]);
     return $payload;
   }
   /**
