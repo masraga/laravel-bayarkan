@@ -2,6 +2,7 @@
 
 namespace Koderpedia\LaravelBayarkan\Midtrans;
 
+use Error;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Koderpedia\LaravelBayarkan\Abstract\PaymentMethod;
@@ -44,7 +45,6 @@ class Midtrans implements Transactions
     $this->payload = [
       "paymentType" => "",
       "transactionDetail" => [],
-      "creditCard" => [], // for credit card payment
       "items" => [],
       "customerDetail" => [],
       "expiryTime" => [],
@@ -89,14 +89,35 @@ class Midtrans implements Transactions
   }
 
   /**
-   * Define purchase item
+   * Define transactiond detail
    * 
    * @param mixed $items
    * @return
    */
   public function setItems(array $items)
   {
-    $this->payload["items"] = $items;
+    if (!isset($items)) {
+      throw new Error("items is required");
+    }
+    if (!is_array($items)) {
+      throw new Error("items must be array");
+    }
+    $this->payload["item_details"] = [];
+    $this->payload["transaction_details"] = [
+      "order_id" => $this->payload["orderId"],
+      "gross_amount" => 0
+    ];
+    foreach ($items as $item) {
+      $this->payload["item_details"][] = [
+        "name" => $item["name"],
+        "price" => $item["price"],
+        "quantity" => $item["quantity"],
+      ];
+      $this->payload["transaction_details"]["gross_amount"] += intval($item["quantity"]) * intval($item["price"]);
+    }
+    unset($this->payload["items"]);
+    unset($this->payload["transactionDetail"]);
+    unset($this->payload["orderId"]);
     return $this;
   }
 
@@ -105,7 +126,12 @@ class Midtrans implements Transactions
    */
   public function setCustomerDetail(array $customer)
   {
-    $this->payload["customerDetail"] = $customer;
+    $this->payload["customer_details"]["first_name"] = $customer["firstName"];
+    $this->payload["customer_details"]["last_name"] = $customer["lastName"];
+    $this->payload["customer_details"]["email"] = $customer["email"];
+    $this->payload["customer_details"]["phone"] = $customer["phone"];
+    $this->payload["customer_details"]["billing_address"]["address"] = $customer["address"];
+    unset($this->payload["customerDetail"]);
     return $this;
   }
 

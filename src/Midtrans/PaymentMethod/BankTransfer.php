@@ -36,9 +36,6 @@ class BankTransfer implements PaymentMethod
    */
   public function setPayload(array &$payload): array
   {
-    /**
-     * setup payment type
-     */
     if ($payload["paymentType"] == "BCA") {
       $payload["payment_type"] = "bank_transfer";
       $payload["bank_transfer"] = [
@@ -69,39 +66,6 @@ class BankTransfer implements PaymentMethod
       ];
     }
     unset($payload["paymentType"]);
-    /**
-     * setup transaction detail
-     */
-    if (!isset($payload["items"])) {
-      throw new Error("items is required");
-    }
-    if (!is_array($payload["items"])) {
-      throw new Error("items must be array");
-    }
-    $payload["item_details"] = [];
-    $payload["transaction_details"] = [
-      "order_id" => $payload["orderId"],
-      "gross_amount" => 0
-    ];
-    foreach ($payload['items'] as $item) {
-      $payload["item_details"][] = [
-        "name" => $item["name"],
-        "price" => $item["price"],
-        "quantity" => $item["quantity"],
-      ];
-      $payload["transaction_details"]["gross_amount"] += intval($item["quantity"]) * intval($item["price"]);
-    }
-    unset($payload["items"]);
-    unset($payload["orderId"]);
-    /**
-     * setup customer detail
-     */
-    $payload["customer_details"]["first_name"] = $payload["customerDetail"]["firstName"];
-    $payload["customer_details"]["last_name"] = $payload["customerDetail"]["lastName"];
-    $payload["customer_details"]["email"] = $payload["customerDetail"]["email"];
-    $payload["customer_details"]["phone"] = $payload["customerDetail"]["phone"];
-    $payload["customer_details"]["billing_address"]["address"] = $payload["customerDetail"]["address"];
-    unset($payload["customerDetail"]);
     return $payload;
   }
 }
