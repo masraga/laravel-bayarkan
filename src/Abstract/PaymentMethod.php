@@ -5,13 +5,6 @@ namespace Koderpedia\LaravelBayarkan\Abstract;
 interface PaymentMethod
 {
   /**
-   * Create transaction order
-   * 
-   * @param mixed $payload Payload for creating payment
-   * @return mixed
-   */
-  public function createTransaction(array $payload): array;
-  /**
    * Create payment type of transaction
    * 
    * @param string $type Valid payment type

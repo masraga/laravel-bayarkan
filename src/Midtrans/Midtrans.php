@@ -2,6 +2,8 @@
 
 namespace Koderpedia\LaravelBayarkan\Midtrans;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Koderpedia\LaravelBayarkan\Abstract\PaymentMethod;
 use Koderpedia\LaravelBayarkan\Abstract\Transactions;
 
@@ -22,8 +24,19 @@ class Midtrans implements Transactions
    */
   public string $baseUrl;
 
+  /**
+   * Default midtrans http header
+   */
+  private array $httpHeaders;
+
   public function __construct()
   {
+    $this->httpHeaders = [
+      "Authorization" => "Basic " . Str::toBase64(config("midtrans.midtrans_server_key") . ":"),
+      "Content-Type" => "application/json",
+      "Accept" => "application/json"
+    ];
+
     $this->baseUrl = (config("midtrans.midtrans_api_production")) ?
       "https://api.midtrans.com/v2" :
       "https://api.sandbox.midtrans.com/v2";
@@ -34,7 +47,7 @@ class Midtrans implements Transactions
       "creditCard" => [], // for credit card payment
       "items" => [],
       "customerDetail" => [],
-      "customerExpiry" => [],
+      "expiryTime" => [],
       "orderId" => "",
     ];
   }
@@ -109,7 +122,16 @@ class Midtrans implements Transactions
    * 
    * @param string|int|mixed $time Expired time
    */
-  public function setExpiredTime(string|int|array $time) {}
+  public function setExpiredTime(string|int|array $time)
+  {
+    $this->payload["expiryTime"] = $time;
+    $this->payload["custom_expiry"] = [
+      "expiry_duration" => $time["duration"],
+      "unit" => $time["unit"]
+    ];
+    unset($this->payload["expiryTime"]);
+    return $this;
+  }
 
   /**
    * Generate payment invoice
@@ -117,7 +139,10 @@ class Midtrans implements Transactions
    */
   public function createTransaction(): array
   {
-    return $this->paymentMethod->createTransaction($this->payload);
+    $this->paymentMethod->setPayload($this->payload);
+    $endpoint = $this->baseUrl . "/charge";
+    $response = Http::withHeaders($this->httpHeaders)->post($endpoint, $this->payload);
+    return $response->json();
   }
 
   /**
@@ -128,7 +153,9 @@ class Midtrans implements Transactions
    */
   public function detailTransaction(string $orderRef): array
   {
-    return [];
+    $endpoint = $this->baseUrl . "/" . $orderRef . "/status";
+    $response = Http::withHeaders($this->httpHeaders)->get($endpoint);
+    return $response->json();
   }
 
   /**

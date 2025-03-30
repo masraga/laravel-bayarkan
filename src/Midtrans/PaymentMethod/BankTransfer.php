@@ -104,16 +104,4 @@ class BankTransfer implements PaymentMethod
     unset($payload["customerDetail"]);
     return $payload;
   }
-  /**
-   * Create transaction order
-   * 
-   * @param mixed $payload Payload for creating payment
-   * @return mixed
-   */
-  public function createTransaction(array $payload): array
-  {
-    $this->setPayload($payload);
-
-    return $payload;
-  }
 }
