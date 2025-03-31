@@ -49,6 +49,7 @@ class Midtrans implements Transactions
       "customerDetail" => [],
       "expiryTime" => [],
       "orderId" => "",
+      "baseUrl" => $this->baseUrl
     ];
   }
 
