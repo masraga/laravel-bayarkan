@@ -143,13 +143,13 @@ class Midtrans implements Transactions
    * 
    * ```php
    * $time = [
-   *  "expiry_duration": 60,
+   *  "duration": 60,
    *  "unit: "minute"
    * ]
    * 
-   * @param string|int|mixed $time Expired time
+   * @param mixed $time Expired time
    */
-  public function setExpiredTime(string|int|array $time)
+  public function setExpiredTime(array $time)
   {
     $this->payload["expiryTime"] = $time;
     $this->payload["custom_expiry"] = [

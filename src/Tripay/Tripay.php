@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Koderpedia\LaravelBayarkan\Abstract\Transactions;
 use Koderpedia\LaravelBayarkan\Tripay\CloseTransaction;
 use Koderpedia\LaravelBayarkan\Abstract\Tripay\Transactions as TripayTransactions;
+use Koderpedia\LaravelBayarkan\Utils;
 
 class Tripay implements Transactions
 {
@@ -97,9 +98,10 @@ class Tripay implements Transactions
     return $this;
   }
 
-  public function setExpiredTime(string|int|array $time)
+  public function setExpiredTime(array $time)
   {
-    $this->payload["expiredTime"] = $time;
+    $unixTime = Utils::unixTime($time["duration"], $time["unit"]);
+    $this->payload["expiredTime"] = $unixTime;
     return $this;
   }
 

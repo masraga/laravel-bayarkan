@@ -34,9 +34,9 @@ interface Transactions
   /**
    * Define expired time for invoice
    * 
-   * @param string|int|mixed $time Expired time
+   * @param mixed $time Expired time
    */
-  public function setExpiredTime(string|int|array $time);
+  public function setExpiredTime(array $time);
 
   /**
    * Generate payment invoice
