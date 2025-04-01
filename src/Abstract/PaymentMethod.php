@@ -18,4 +18,14 @@ interface PaymentMethod
    * @return mixed
    */
   public function setPayload(array &$payload): array;
+  /**
+   * Creating transaction signature if each payment have difference method to create signature
+   * 
+   * @param mixed $payload Transaction payload
+   */
+  public function create(array $payload): array;
+  /**
+   * Getting transaction detail
+   */
+  public function detail(string $orderRef);
 }

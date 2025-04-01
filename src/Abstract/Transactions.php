@@ -58,4 +58,11 @@ interface Transactions
    * @return mixed
    */
   public function getPaymentChannel(): array;
+  /**
+   * Define payment method for transaction
+   * 
+   * @param PaymentMethod $paymentMethod Payment method for transaction
+   * @return 
+   */
+  public function use(PaymentMethod $paymentMethod);
 }

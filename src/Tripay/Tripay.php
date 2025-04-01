@@ -3,28 +3,12 @@
 namespace Koderpedia\LaravelBayarkan\Tripay;
 
 use Illuminate\Support\Facades\Http;
+use Koderpedia\LaravelBayarkan\Abstract\PaymentMethod;
 use Koderpedia\LaravelBayarkan\Abstract\Transactions;
-use Koderpedia\LaravelBayarkan\Tripay\CloseTransaction;
-use Koderpedia\LaravelBayarkan\Abstract\Tripay\Transactions as TripayTransactions;
 use Koderpedia\LaravelBayarkan\Utils;
 
 class Tripay implements Transactions
 {
-
-  /**
-   * Close payment method for tripay
-   */
-  const CLOSE_PAYMENT = "close";
-
-  /**
-   * Open payment method for tripay
-   */
-  const OPEN_PAYMENT = "open";
-
-  /**
-   * Tripay payment flow open or close
-   */
-  private $useMethod;
 
   /**
    * Transaction payload
@@ -34,18 +18,16 @@ class Tripay implements Transactions
   /**
    * Tripay transaction interface
    */
-  private TripayTransactions $transaction;
+  private PaymentMethod $transaction;
 
   /**
    * define tripay base url
    */
   private string $baseUrl;
 
-  public function __construct(string $useMethod = self::CLOSE_PAYMENT)
+  public function __construct()
   {
-    $this->useMethod = $useMethod;
     $this->setDefaultVariable();
-    $this->transaction = ($useMethod == self::CLOSE_PAYMENT) ? new CloseTransaction($this->baseUrl) : new OpenTransaction(($this->baseUrl));
   }
 
   /**
@@ -53,11 +35,6 @@ class Tripay implements Transactions
    */
   private function setDefaultVariable()
   {
-    if ($this->useMethod == self::CLOSE_PAYMENT) {
-      $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api-sandbox";
-    } else {
-      $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api";
-    }
     $this->payload = array(
       "orderId" => "",
       "customerDetail" => array(),
@@ -70,7 +47,17 @@ class Tripay implements Transactions
       "expiredTime" => 0,
     );
   }
-
+  /**
+   * Define payment method for transaction
+   * 
+   * @param PaymentMethod $paymentMethod Payment method for transaction
+   * @return 
+   */
+  public function use(PaymentMethod $paymentMethod)
+  {
+    $this->transaction = $paymentMethod;
+    return $this;
+  }
   public function setOrderId(string $orderId)
   {
     $this->payload["orderId"] = $orderId;
@@ -79,7 +66,7 @@ class Tripay implements Transactions
 
   public function setPaymentType(string $type)
   {
-    $this->payload["paymentType"] = $type;
+    $this->payload["paymentType"] = $this->transaction->setPaymentType($type);
     return $this;
   }
 

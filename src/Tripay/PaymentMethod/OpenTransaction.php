@@ -1,11 +1,11 @@
 <?php
 
-namespace Koderpedia\LaravelBayarkan\Tripay;
+namespace Koderpedia\LaravelBayarkan\Tripay\PaymentMethod;
 
 use Illuminate\Support\Facades\Http;
-use Koderpedia\LaravelBayarkan\Abstract\Tripay\Transactions;
+use Koderpedia\LaravelBayarkan\Abstract\PaymentMethod;
 
-class CloseTransaction implements Transactions
+class OpenTransaction implements PaymentMethod
 {
   /**
    * Tripay base url
@@ -14,33 +14,43 @@ class CloseTransaction implements Transactions
 
   /**
    * Close transaction construction
-   * 
-   * @param string $baseUrl Tripay endpoint baseUrl
    */
-  public function __construct(string $baseUrl)
+  public function __construct()
   {
-    $this->baseUrl = $baseUrl;
+    $this->baseUrl = (config("tripay.tripay_api_production")) ? "https://tripay.co.id/api" : "https://tripay.co.id/api";
   }
-
+  /**
+   * Create payment type of transaction
+   * 
+   * @param string $type Valid payment type
+   * @return string PaymentType
+   */
+  public function setPaymentType(string $type): string
+  {
+    return $type;
+  }
+  /**
+   * Map transaction payload based on payment criteria
+   * 
+   * @param mixed $payload Transaction paylaod
+   * @return mixed
+   */
+  public function setPayload(array &$payload): array
+  {
+    return $payload;
+  }
   public function create(array $payload): array
   {
     $payload = [
       "method" => $payload["paymentType"],
       "merchant_ref" => $payload["orderId"],
-      "amount" => $payload["amount"],
       "customer_name" => $payload["customerDetail"]["name"],
-      "customer_email" => $payload["customerDetail"]["email"],
-      "customer_phone" => $payload["customerDetail"]["phone"],
-      "order_items" => $payload["items"],
-      "returnUrl" => $payload["returnUrl"] ?? config("tripay.tripay_return_url"),
-      "callbackUrl" => $payload["notifUrl"] ?? config("tripay.tripay_notification_url"),
-      "expired_time" => $payload["expiredTime"],
       "signature" => $payload["signature"]
     ];
     $response = Http::withHeaders([
       "Authorization" => "Bearer " . config("tripay.tripay_api_key")
     ])->post(
-      $this->baseUrl . "/transaction/create",
+      $this->baseUrl . "/open-payment/create",
       $payload
     );
     return $response->json();
@@ -51,7 +61,7 @@ class CloseTransaction implements Transactions
     $response = Http::withHeaders([
       "Authorization" => "Bearer " . config("tripay.tripay_api_key")
     ])->get(
-      $this->baseUrl . "/transaction/detail",
+      $this->baseUrl . "/open-payment/$orderRef/detail",
       ["reference" => $orderRef]
     );
     return $response->json();
