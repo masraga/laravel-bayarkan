@@ -93,7 +93,8 @@ class CardPayment implements PaymentMethod
     $token = $this->getToken();
     $payload["credit_card"] = [
       "token_id" => $token["token_id"],
-      "authentication" => true
+      "authentication" => true,
+      "secure" => true,
     ];
 
     if ($payload["paymentType"] == "credit_card") {
